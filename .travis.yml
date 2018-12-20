@@ -2,7 +2,7 @@ language: csharp
 solution: CertDump.sln
 
 mono: none
-dotnet: 2.1.500
+dotnet: 2.2.100
 script:
     - dotnet publish -c Release -r win-x64
     - dotnet publish -c Release -r linux-x64
