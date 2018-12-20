@@ -21,3 +21,4 @@ deploy:
     - "./certdump-linux-x64.zip"
   on:
     repo: secana/CertDump
+    tags: true
