@@ -5,7 +5,22 @@ dist: xenial
 mono: none
 dotnet: 2.2
 script:
+
+    # Windows Release
     - dotnet publish -c Release -r win-x64
+    - cp -r ./CertDump/bin/Release/netcoreapp2.2/win-x64/publish/ ./certdump-win-x64
+    - zip -r certdump-win-x64.zip ./certdump-win-x64
+
+    # Linux Release
     - dotnet publish -c Release -r linux-x64
-    - zip -r certdump-win-x64.zip ./CertDump/bin/Release/netcoreapp2.2/win-x64/publish/
-    - zip -r certdump-linux-x64.zip ./CertDump/bin/Release/netcoreapp2.2/linux-x64/publish/
+    - cp -r ./CertDump/bin/Release/netcoreapp2.2/linux-x64/publish/ ./certdump-linux-x64
+    - zip -r certdump-linux-x64.zip ./certdump-linux-x64
+
+deploy:
+    provider: Release
+    api_key: <enter key here>
+    file:
+        - ./certdump-win-x64.zip
+        - ./certdump-linux-x64.zip
+    skip_cleanup: true
+    on: https://github.com/secana/CertDump/
