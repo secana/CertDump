@@ -1,8 +1,9 @@
 language: csharp
 solution: CertDump.sln
 
+dist: xenial
 mono: none
-dotnet: 2.2.*
+dotnet: 2.2
 script:
     - dotnet publish -c Release -r win-x64
     - dotnet publish -c Release -r linux-x64
