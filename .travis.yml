@@ -27,4 +27,4 @@ deploy:
   skip_cleanup: true
   on:
     repo: secana/CertDump
-    #tags: true
+    tags: true
