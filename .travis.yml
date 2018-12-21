@@ -24,7 +24,7 @@ deploy:
   file: 
     - "certdump-win-x64.zip"
     - "certdump-linux-x64.zip"
-  overwrite: true
+  deploy.skip_cleanup: true
   on:
     repo: secana/CertDump
     #tags: true
