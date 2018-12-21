@@ -5,12 +5,17 @@ dist: xenial
 mono: none
 dotnet: 2.2
 script:
+# Build Windows binary
 - dotnet publish -c Release -r win-x64
 - cp -r ./CertDump/bin/Release/netcoreapp2.2/win-x64/publish/ ./certdump-win-x64
 - zip -r certdump-win-x64.zip ./certdump-win-x64
+
+# Build Linux binary
 - dotnet publish -c Release -r linux-x64
 - cp -r ./CertDump/bin/Release/netcoreapp2.2/linux-x64/publish/ ./certdump-linux-x64
 - zip -r certdump-linux-x64.zip ./certdump-linux-x64
+
+- ls -lah
 
 deploy:
   provider: releases
