@@ -14,10 +14,5 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: DotNetCoreCLI@2
-  displayName: 'Create native Windows executable'
-  inputs:
-   command: publish
-   projects: '**/*.csproj'
-   arguments: '-c $(buildConfiguration) -r win-x64'
-
+- powershell:  dotnet publish -r win-x64 -c release 
+  displayName: Build native Windows executable
