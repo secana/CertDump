@@ -17,3 +17,15 @@ steps:
 
 - powershell:  dotnet publish -r win-x64 -c release 
   displayName: Build native Windows executable
+
+- powershell: cp .\CertDump\bin\Release\netcoreapp2.1\win-x64\native\CertDump.exe $(Build.ArtifactStagingDirectory)
+  displayName: Copy CertDump.exe to "Artifacts Staging Directory"
+
+- task: GitHubRelease@0
+  diplsyName: Create GitHub Release
+  inputs:
+    gitHubConnection: 'CertDump'
+    repositoryName: 'secana/CertDump'
+    tagSource: manual
+    tag: $(Build.BuildNumber)
+    assets: $(Build.ArtifactStagingDirectory)/*.exe
