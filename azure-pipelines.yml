@@ -24,7 +24,7 @@ steps:
 - task: GitHubRelease@0
   displayName: Create GitHub Release
   inputs:
-    gitHubConnection: 'CertDump'
+    gitHubConnection: 'CertDumpRelease'
     repositoryName: 'secana/CertDump'
     tagSource: manual
     tag: $(Build.BuildNumber)
