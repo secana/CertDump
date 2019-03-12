@@ -22,7 +22,7 @@ steps:
   displayName: Copy CertDump.exe to "Artifacts Staging Directory"
 
 - task: GitHubRelease@0
-  diplsyName: Create GitHub Release
+  displayName: Create GitHub Release
   inputs:
     gitHubConnection: 'CertDump'
     repositoryName: 'secana/CertDump'
