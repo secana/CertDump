@@ -23,9 +23,10 @@ steps:
 
 - task: GitHubRelease@0
   displayName: Create GitHub Release
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   inputs:
     gitHubConnection: 'CertDumpRelease'
     repositoryName: 'secana/CertDump'
-    tagSource: manual
-    tag: $(Build.BuildNumber)
+    title: 'CertDump Windows x64'
+    addChangeLog: false
     assets: $(Build.ArtifactStagingDirectory)/*.exe
