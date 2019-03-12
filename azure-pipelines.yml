@@ -15,13 +15,5 @@ variables:
 
 steps:
 
-- task: PowerShell@2
-  displayName: Install .Net Core 3.0 preview
-  inputs:
-    targetType: filePath
-    failOnStderr: true
-    filePath: .\dotnet-install.ps1
-    arguments: "-Channel release/3.0.0-preview3"
-
 - powershell:  dotnet publish -r win-x64 -c release 
   displayName: Build native Windows executable
