@@ -15,6 +15,9 @@ variables:
 
 steps:
 
+- powershell: choco install dotnetcore-sdk --pre
+  displayName: Install .NET Core 3.0 preview
+
 - powershell:  dotnet publish -r win-x64 -c release 
   displayName: Build native Windows executable
 
