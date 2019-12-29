@@ -4,8 +4,12 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
-- master
-- features/*
+  branches:
+    include:
+    - '*'
+  tags:
+    include:
+    - '*'
 
 pool:
   vmImage: 'windows-2019'
@@ -15,6 +19,32 @@ variables:
 
 steps:
 
+- powershell: $version = ($env:Build_SourceBranch -replace 'refs/tags/v',''); echo $version; echo "##vso[task.setvariable variable=version]$version"
+  displayName: Get version from tag
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+
+- powershell: ((Get-Content -path .\CertDump\CertDump.csproj -Raw) -replace '0.0.0',$env:version) | Set-Content -Path .\CertDump\CertDump.csproj
+  displayName: Replace version with git tag
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+
+- powershell: dotnet pack -c Release /p:NativeCompilationDuringPublish=false
+  displayName: Pack global tool
+
+- task: NuGetToolInstaller@0
+  displayName: Install NuGet
+  inputs:
+    versionSpec: '5.4.0'
+
+- task: NuGetCommand@2
+  displayName: 'Publish tool to NuGet.org'
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+  inputs:
+    command: push
+    nuGetFeedType: external
+    allowPackageConflicts: true
+    publishFeedCredentials: 'Nuget.org'
+    packagesToPush: './CertDump/nupkg/*.*nupkg'
+
 - powershell:  dotnet publish -r win-x64 -c release 
   displayName: Build native Windows executable
 
@@ -23,7 +53,7 @@ steps:
 
 - task: GitHubRelease@0
   displayName: Create GitHub Release
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
   inputs:
     gitHubConnection: 'CertDumpRelease'
     repositoryName: 'secana/CertDump'
