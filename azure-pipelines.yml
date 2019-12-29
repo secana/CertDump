@@ -4,8 +4,12 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
-- master
-- features/*
+  branches:
+    include:
+    - '*'
+  tags:
+    include:
+    - '*'
 
 pool:
   vmImage: 'windows-2019'
