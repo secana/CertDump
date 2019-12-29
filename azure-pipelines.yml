@@ -15,6 +15,17 @@ variables:
 
 steps:
 
+- powershell: echo "##vso[task.setvariable variable=version], ($env:Build_SourceBranch -replace 'ref/tags/v','')"
+  displayName: Get version from tag
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+
+- powershell: ((Get-Content -path .\CertDump\CertDump.csproj -Raw) -replace '0.0.0',$env:version) | Set-Content -Path .\CertDump\CertDump.csproj
+  displayName: Replace version with git tag
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+
+- powershell: dotnet pack -c Release /p:NativeCompilationDuringPublish=false
+  displayName: Pack global tool
+
 - powershell:  dotnet publish -r win-x64 -c release 
   displayName: Build native Windows executable
 

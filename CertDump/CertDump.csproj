@@ -3,6 +3,11 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Version>0.0.0</Version>
+
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>certdump</ToolCommandName>
+    <PackageOutputPath>./nupkg</PackageOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,3 +17,4 @@
   </ItemGroup>
 
 </Project>
+
