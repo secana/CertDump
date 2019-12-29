@@ -26,18 +26,18 @@ steps:
 - powershell: dotnet pack -c Release /p:NativeCompilationDuringPublish=false
   displayName: Pack global tool
 
-- powershell:  dotnet publish -r win-x64 -c release 
-  displayName: Build native Windows executable
-
-- powershell: cp .\CertDump\bin\Release\netcoreapp3.1\win-x64\native\CertDump.exe $(Build.ArtifactStagingDirectory)
-  displayName: Copy CertDump.exe to "Artifacts Staging Directory"
-
-- task: GitHubRelease@0
-  displayName: Create GitHub Release
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-  inputs:
-    gitHubConnection: 'CertDumpRelease'
-    repositoryName: 'secana/CertDump'
-    title: 'CertDump Windows x64'
-    addChangeLog: false
-    assets: $(Build.ArtifactStagingDirectory)/*.exe
+#- powershell:  dotnet publish -r win-x64 -c release 
+#  displayName: Build native Windows executable
+#
+#- powershell: cp .\CertDump\bin\Release\netcoreapp3.1\win-x64\native\CertDump.exe $(Build.ArtifactStagingDirectory)
+#  displayName: Copy CertDump.exe to "Artifacts Staging Directory"
+#
+#- task: GitHubRelease@0
+#  displayName: Create GitHub Release
+#  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+#  inputs:
+#    gitHubConnection: 'CertDumpRelease'
+#    repositoryName: 'secana/CertDump'
+#    title: 'CertDump Windows x64'
+#    addChangeLog: false
+#    assets: $(Build.ArtifactStagingDirectory)/*.exe
