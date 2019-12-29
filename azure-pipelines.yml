@@ -23,8 +23,6 @@ steps:
   displayName: Get version from tag
   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
 
-- powershell: echo $env:Build_SourceBranch; echo $env:version
-
 - powershell: ((Get-Content -path .\CertDump\CertDump.csproj -Raw) -replace '0.0.0',$env:version) | Set-Content -Path .\CertDump\CertDump.csproj
   displayName: Replace version with git tag
   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
@@ -32,18 +30,33 @@ steps:
 - powershell: dotnet pack -c Release /p:NativeCompilationDuringPublish=false
   displayName: Pack global tool
 
-#- powershell:  dotnet publish -r win-x64 -c release 
-#  displayName: Build native Windows executable
-#
-#- powershell: cp .\CertDump\bin\Release\netcoreapp3.1\win-x64\native\CertDump.exe $(Build.ArtifactStagingDirectory)
-#  displayName: Copy CertDump.exe to "Artifacts Staging Directory"
-#
-#- task: GitHubRelease@0
-#  displayName: Create GitHub Release
-#  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-#  inputs:
-#    gitHubConnection: 'CertDumpRelease'
-#    repositoryName: 'secana/CertDump'
-#    title: 'CertDump Windows x64'
-#    addChangeLog: false
-#    assets: $(Build.ArtifactStagingDirectory)/*.exe
+- task: NuGetToolInstaller@0
+  displayName: Install NuGet
+  inputs:
+    versionSpec: '5.4.0'
+
+- task: NuGetCommand@2
+  displayName: 'Publish tool to NuGet.org'
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+  inputs:
+    command: push
+    nuGetFeedType: external
+    allowPackageConflicts: true
+    publishFeedCredentials: 'Nuget.org'
+    packagesToPush: './CertDump/nupkg/*.*nupkg'
+
+- powershell:  dotnet publish -r win-x64 -c release 
+  displayName: Build native Windows executable
+
+- powershell: cp .\CertDump\bin\Release\netcoreapp3.1\win-x64\native\CertDump.exe $(Build.ArtifactStagingDirectory)
+  displayName: Copy CertDump.exe to "Artifacts Staging Directory"
+
+- task: GitHubRelease@0
+  displayName: Create GitHub Release
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+  inputs:
+    gitHubConnection: 'CertDumpRelease'
+    repositoryName: 'secana/CertDump'
+    title: 'CertDump Windows x64'
+    addChangeLog: false
+    assets: $(Build.ArtifactStagingDirectory)/*.exe
