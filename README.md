@@ -23,7 +23,7 @@ dotnet tool install -g CertDump
 # update CertDump
 dotnet tool update -g CertDump
 
-# deinstall CertDump
+# uninstall CertDump
 dotnet tool uninstall -g CertDump
 ```
 
@@ -44,12 +44,11 @@ Copyright (C) 2019 CertDump
   --version     Display version information.
 ```
 
-
 ## Release new version
 
 A new version is automatically released from the `master` branch when a `git tag` is discovered.
 
-Tag a release commit with: `git tag -a v1.0.0 -m "CertDump v1.0.0`. 
+Tag a release commit with: `git tag -a v1.0.0 -m "CertDump v1.0.0"`.
 
 Push the tag to the origin: `git push origin v1.0.0`
 
