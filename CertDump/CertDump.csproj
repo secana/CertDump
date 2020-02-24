@@ -12,7 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.7.82" />
-    <PackageReference Include="Microsoft.DotNet.ILCompiler" Version="1.0.0-alpha-28619-01" />
+    <PackageReference Include="Microsoft.DotNet.ILCompiler" Version="1.0.0-alpha-28622-01" />
     <PackageReference Include="PeNet" Version="1.5.3" />
   </ItemGroup>
 
