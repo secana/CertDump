@@ -27,7 +27,7 @@ namespace CertDump
         static void DumpCert(string file, string output)
         {
             var peFile = new PeFile(file);
-            File.WriteAllBytes(output, peFile.WinCertificate.bCertificate);
+            File.WriteAllBytes(output, peFile.WinCertificate.BCertificate.ToArray());
         }
     }
 }
