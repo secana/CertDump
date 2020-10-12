@@ -62,6 +62,9 @@ jobs:
           pathtoPublish: "$(Build.ArtifactStagingDirectory)"
           artifactName: certdump
 
+      - powershell: ls $(Build.ArtifactStagingDirectory)
+        displayName: "List artifacts"
+
   - job: Release
     dependsOn:
       - Build
@@ -83,6 +86,10 @@ jobs:
           inputs:
             versionSpec: "5.4.0"
 
+        - powershell: $version = ($env:Build_SourceBranch -replace 'refs/tags/v',''); echo $version; echo "##vso[task.setvariable variable=version]$version"
+          displayName: Get version from tag
+          condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+
         # - task: NuGetCommand@2
         #   displayName: "Publish tool to NuGet.org"
         #   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
@@ -99,7 +106,7 @@ jobs:
           inputs:
             gitHubConnection: "CertDumpRelease"
             repositoryName: "secana/CertDump"
-            title: "CertDump Windows x64"
+            title: "CertDump Windows x64 $(version)"
             addChangeLog: false
             assets: |
               $(System.ArtifactsDirectory)/*.exe
