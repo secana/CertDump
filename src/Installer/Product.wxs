@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" Name="CertDump" Language="1033" Version="1.0.0" Manufacturer="secana" UpgradeCode="9210311a-e6c3-4976-826d-439ed8d7742c">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Platform="x64" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of CertDump is already installed." />
+    <MediaTemplate EmbedCab="yes"/>
+
+    <Directory Id='TARGETDIR' Name='SourceDir'>
+      <Directory Id='ProgramFiles64Folder'>
+        <Directory Id='INSTALLDIR' Name='CertDump'>
+          <Component Id='MainExecutable' Guid='78a4f215-fafc-4872-9ebb-21a96466197a'>
+            <File Id='CertDumpExe' Name='certdump.exe' Source='..\..\artifacts\certdump.exe' Vital='yes' />
+            <RemoveFolder Id="INSTALLDIR" On="uninstall" />
+            <Environment Id='UpdatePath' Name='PATH' Action='set' Permanent='no' System='yes' Part='last' Value='[INSTALLDIR]' />
+          </Component>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <Feature Id='Complete' Level="1">
+      <ComponentRef Id='MainExecutable' />
+    </Feature>
+
+  </Product>
+</Wix>
+
