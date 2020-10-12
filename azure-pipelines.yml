@@ -90,15 +90,15 @@ jobs:
         displayName: Get version from tag
         condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
 
-      - task: NuGetCommand@2
-        displayName: "Publish tool to NuGet.org"
-        condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
-        inputs:
-          command: push
-          nuGetFeedType: external
-          allowPackageConflicts: true
-          publishFeedCredentials: "Nuget.org"
-          packagesToPush: "$(System.ArtifactsDirectory)/certdump/*.*nupkg"
+      # - task: NuGetCommand@2
+      #   displayName: "Publish tool to NuGet.org"
+      #   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+      #   inputs:
+      #     command: push
+      #     nuGetFeedType: external
+      #     allowPackageConflicts: true
+      #     publishFeedCredentials: "Nuget.org"
+      #     packagesToPush: "$(System.ArtifactsDirectory)/certdump/*.*nupkg"
 
       - task: GitHubRelease@0
         displayName: Create GitHub Release
