@@ -109,5 +109,5 @@ jobs:
           title: "CertDump Windows x64 $(version)"
           addChangeLog: false
           assets: |
-            $(System.ArtifactsDirectory)/*.exe
-            $(System.ArtifactsDirectory)/*.msi
+            $(System.ArtifactsDirectory)/certdump/*.exe
+            $(System.ArtifactsDirectory)/certdump/*.msi
