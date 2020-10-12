@@ -6,57 +6,101 @@
 trigger:
   branches:
     include:
-    - '*'
+      - "*"
   tags:
     include:
-    - '*'
+      - "*"
 
-pool:
-  vmImage: 'windows-2019'
+jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: "windows-2019"
 
-variables:
-  buildConfiguration: 'Release'
+    variables:
+      buildConfiguration: "Release"
+      artifactsFolder: "$(Build.SourcesDirectory)/artifacts/"
 
-steps:
+    steps:
+      - powershell: $version = '0.0.0'; echo "##vso[task.setvariable variable=version]$version"
+        displayName: Set default version
 
-- powershell: $version = ($env:Build_SourceBranch -replace 'refs/tags/v',''); echo $version; echo "##vso[task.setvariable variable=version]$version"
-  displayName: Get version from tag
-  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+      - powershell: $version = ($env:Build_SourceBranch -replace 'refs/tags/v',''); echo $version; echo "##vso[task.setvariable variable=version]$version"
+        displayName: Get version from tag
+        condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
 
-- powershell: ((Get-Content -path .\CertDump\CertDump.csproj -Raw) -replace '0.0.0',$env:version) | Set-Content -Path .\CertDump\CertDump.csproj
-  displayName: Replace version with git tag
-  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+      - powershell: ((Get-Content -path .\CertDump\CertDump.csproj -Raw) -replace '0.0.0',$env:version) | Set-Content -Path .\CertDump\CertDump.csproj
+        displayName: Replace version with git tag
+        condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
 
-- powershell: dotnet pack -c Release /p:NativeCompilationDuringPublish=false
-  displayName: Pack global tool
+      - powershell: dotnet pack -c $(buildConfiguration) -o $(artifactsFolder) /p:NativeCompilationDuringPublish=false
+        displayName: Pack global tool
 
-- task: NuGetToolInstaller@0
-  displayName: Install NuGet
-  inputs:
-    versionSpec: '5.4.0'
+      - powershell: cp $(artifactsFolder)\CertDump.*.nupkg $(Build.ArtifactStagingDirectory)
+        displayName: Copy CertDump.nupkg to "Artifacts Staging Directory"
 
-- task: NuGetCommand@2
-  displayName: 'Publish tool to NuGet.org'
-  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
-  inputs:
-    command: push
-    nuGetFeedType: external
-    allowPackageConflicts: true
-    publishFeedCredentials: 'Nuget.org'
-    packagesToPush: './CertDump/nupkg/*.*nupkg'
+      - powershell: dotnet publish -c $(buildConfiguration) -r win-x64 -o $(artifactsFolder)
+        displayName: Build native Windows executable
 
-- powershell:  dotnet publish -r win-x64 -c release 
-  displayName: Build native Windows executable
+      - powershell: cp $(artifactsFolder)\CertDump.exe $(Build.ArtifactStagingDirectory)
+        displayName: Copy CertDump.exe to "Artifacts Staging Directory"
 
-- powershell: cp .\CertDump\bin\Release\netcoreapp3.1\win-x64\native\CertDump.exe $(Build.ArtifactStagingDirectory)
-  displayName: Copy CertDump.exe to "Artifacts Staging Directory"
+      - task: PowerShell@2
+        displayName: "Build MSI setup"
+        inputs:
+          targetPath: "filePath"
+          filePath: "$(Build.SourcesDirectory)/src/Installer/build-msi.ps1"
+          arguments: "-version $env:version"
+          workingDirectory: "$(Build.SourcesDirectory)/src/Installer"
 
-- task: GitHubRelease@0
-  displayName: Create GitHub Release
-  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
-  inputs:
-    gitHubConnection: 'CertDumpRelease'
-    repositoryName: 'secana/CertDump'
-    title: 'CertDump Windows x64'
-    addChangeLog: false
-    assets: $(Build.ArtifactStagingDirectory)/*.exe
+      - powershell: cp $(artifactsFolder)\CertDump.msi $(Build.ArtifactStagingDirectory)
+        displayName: Copy CertDump.msi to "Artifacts Staging Directory"
+
+      - task: PublishBuildArtifacts@1
+        displayName: Publish
+        inputs:
+          pathtoPublish: "$(Build.ArtifactStagingDirectory)"
+          artifactName: certdump
+
+  - job: Release
+    dependsOn:
+      - Build
+
+    pool:
+      vmImage: "windows-2019"
+
+      steps:
+        - task: DownloadBuildArtifacts@0
+          displayName: Download Windows executable
+          inputs:
+            buildType: "current"
+            downloadType: "single"
+            artifactName: "certdump"
+            downloadPath: "$(System.ArtifactsDirectory)"
+
+        - task: NuGetToolInstaller@0
+          displayName: Install NuGet
+          inputs:
+            versionSpec: "5.4.0"
+
+        # - task: NuGetCommand@2
+        #   displayName: "Publish tool to NuGet.org"
+        #   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+        #   inputs:
+        #     command: push
+        #     nuGetFeedType: external
+        #     allowPackageConflicts: true
+        #     publishFeedCredentials: "Nuget.org"
+        #     packagesToPush: "$(System.ArtifactsDirectory)/*.*nupkg"
+
+        - task: GitHubRelease@0
+          displayName: Create GitHub Release
+          condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+          inputs:
+            gitHubConnection: "CertDumpRelease"
+            repositoryName: "secana/CertDump"
+            title: "CertDump Windows x64"
+            addChangeLog: false
+            assets: |
+              $(System.ArtifactsDirectory)/*.exe
+              $(System.ArtifactsDirectory)/*.msi
