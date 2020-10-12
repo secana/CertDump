@@ -12,5 +12,5 @@ Commands: "certdump"
 Installers:
   - Arch: x64
     Url: https://github.com/secana/CertDump/releases/download/v1.1.5/CertDump.msi
-    Sha256: 
+    Sha256: D4E5024CE2158519755C829F5A0F69D910D24C180067AE7F601B64C5A1C6B03B
     InstallerType: msi
