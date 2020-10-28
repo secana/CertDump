@@ -6,15 +6,23 @@ Cross-Platform tool to dump the signing certificate from a Portable Executable (
 
 ## Get CertDump
 
-There are different ways to obain *CertDump*. Please check, which works for your operating system.
+There are different ways to obtain _CertDump_. Please check, which works for your operating system.
+
+## Winget
+
+The easiest ways to install _CertDump_ is with _winget_.
+
+```powershell
+winget install secana.CertDump
+```
 
 ### Github release
 
-You find the latest *Windows* binaries under the [Release](https://github.com/secana/CertDump/releases) page.
+You find the latest _Windows_ binaries under the [Release](https://github.com/secana/CertDump/releases) page.
 
 ### Dotnet Global Tool
 
-You can install the latest version as a [dotnet global tool](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools). The tool runs on *Windows*, *Linux* and *MacOs*.
+You can install the latest version as a [dotnet global tool](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools). The tool runs on _Windows_, _Linux_ and _MacOs_.
 
 ```powershell
 # install CertDump
@@ -53,3 +61,7 @@ Tag a release commit with: `git tag -a v1.0.0 -m "CertDump v1.0.0"`.
 Push the tag to the origin: `git push origin v1.0.0`
 
 Replace the version number with the one to use.
+
+### Winget
+
+It's not possible to automate the _winget_ release at the moment. To release a new version, a new manifest file needs to be published manually to [winget-pkgs certdump](https://github.com/microsoft/winget-pkgs/tree/master/manifests/secana/CertDump).
