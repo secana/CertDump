@@ -12,8 +12,8 @@
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
-    <PackageReference Include="Microsoft.DotNet.ILCompiler" Version="8.0.0-*" />
     <PackageReference Include="PeNet" Version="5.1.0" />
+    <PackageReference Include="Microsoft.DotNet.ILCompiler" Version="10.0.7" />
   </ItemGroup>
 
   <PropertyGroup>
